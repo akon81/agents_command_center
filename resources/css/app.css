@@ -1,0 +1,85 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source "../**/*.blade.php";
+@source "../**/*.js";
+@source "../../app/Livewire/**/*.php";
+
+@theme {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+
+    --color-bg-base:    #0a0a0b;
+    --color-bg-panel:   #141416;
+    --color-bg-elevated:#1a1a1f;
+    --color-border-default: #1f1f23;
+    --color-accent:     #5e6ad2;
+    --color-text-primary: #e8e8ea;
+    --color-text-muted:   #71717a;
+    --color-status-idle:  #52525b;
+    --color-status-busy:  #3b82f6;
+    --color-status-ok:    #10b981;
+    --color-status-error: #ef4444;
+    --color-status-review:#f59e0b;
+}
+
+@layer base {
+    * {
+        border-color: #1f1f23;
+    }
+
+    body {
+        background-color: #0a0a0b;
+        color: #e8e8ea;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    ::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #1f1f23;
+        border-radius: 9999px;
+    }
+}
+
+@layer components {
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 8px;
+        border-radius: 9999px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+    }
+
+    .status-pill-idle {
+        background-color: rgba(31, 31, 35, 0.8);
+        color: #71717a;
+    }
+
+    .status-pill-busy {
+        background-color: rgba(59, 130, 246, 0.1);
+        color: #60a5fa;
+    }
+
+    .status-pill-completed {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: #34d399;
+    }
+
+    .status-pill-failed {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: #f87171;
+    }
+}
