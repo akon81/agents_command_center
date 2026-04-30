@@ -10,9 +10,10 @@ class TestAgentRun extends Command
 {
     protected $signature = 'agent:test
                             {slug? : Agent slug (default: coder)}
-                            {--prompt= : Custom prompt text}';
+                            {--prompt= : Custom prompt text}
+                            {--workspace= : Working directory passed via --add-dir}';
 
-    protected $description = 'Dispatch a test run for an agent (uses fake ping process)';
+    protected $description = 'Dispatch a test run for an agent via the real claude CLI';
 
     public function handle(AgentRunService $service): int
     {
@@ -27,7 +28,7 @@ class TestAgentRun extends Command
         }
 
         $prompt = $this->option('prompt') ?? "Test run for {$slug} at " . now()->format('H:i:s');
-        $workspace = base_path();
+        $workspace = $this->option('workspace') ?? 'C:\\Herd';
 
         $this->info("Dispatching run for agent: {$agent->slug}");
         $run = $service->createAndDispatch($agent, $prompt, $workspace);

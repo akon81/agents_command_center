@@ -7,9 +7,11 @@ use App\Events\TaskProgressed;
 use App\Models\Log;
 use App\Models\Run;
 use App\Services\Progress\ProgressParser;
+use App\Services\Progress\ToolUseExtractor;
 
 class LogIngester {
     private ProgressParser $progressParser;
+    private ToolUseExtractor $toolUseExtractor;
     private array $buffer = [];
     private int $seq;
     private int $FLUSH_SIZE = 50;
@@ -18,6 +20,7 @@ class LogIngester {
 
     public function __construct(private Run $run) {
         $this->progressParser = new ProgressParser();
+        $this->toolUseExtractor = new ToolUseExtractor();
         $this->seq = Log::where('run_id', $run->id)->max('seq') ?? 0;
     }
 
@@ -40,19 +43,24 @@ class LogIngester {
                 $percent = $signal->toPercent();
                 $this->run->update(['progress' => $percent]);
                 if ($percent !== $this->lastBroadcastedProgress) {
-                    broadcast(new TaskProgressed($this->run, $percent, $signal->label ?? null));
+                    try { broadcast(new TaskProgressed($this->run, $percent, $signal->label ?? null)); } catch (\Throwable) {}
                     $this->lastBroadcastedProgress = $percent;
                 }
             }
 
-            // Detect current action: "● ToolName(args)"
-            if (preg_match('/^[●•]\s+(\w+)\((.{0,100})\)/', $line, $m)) {
+            // Try tool_use extraction first (stream-json), then fall back to bullet regex
+            $actionSignal = $this->toolUseExtractor->parse($line);
+            $action = null;
+            if ($actionSignal !== null) {
+                $action = $actionSignal->action;
+            } elseif (preg_match('/^[●•]\s+(\w+)\((.{0,100})\)/', $line, $m)) {
                 $action = $m[1] . '(' . $m[2] . ')';
+            }
+
+            if ($action !== null && $action !== $this->lastAction) {
                 $this->run->update(['current_action' => $action]);
-                if ($action !== $this->lastAction) {
-                    broadcast(new ActionChanged($this->run, $action));
-                    $this->lastAction = $action;
-                }
+                try { broadcast(new ActionChanged($this->run, $action)); } catch (\Throwable) {}
+                $this->lastAction = $action;
             }
 
             if (count($this->buffer) >= $this->FLUSH_SIZE) {
@@ -66,6 +74,6 @@ class LogIngester {
         $lines = array_column($this->buffer, 'content');
         Log::insert($this->buffer);
         $this->buffer = [];
-        broadcast(new LogAppended($this->run, $lines));
+        try { broadcast(new LogAppended($this->run, $lines)); } catch (\Throwable) {}
     }
 }

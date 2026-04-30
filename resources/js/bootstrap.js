@@ -17,14 +17,3 @@ window.Echo = new Echo({
     forceTLS: false,
     enabledTransports: ['ws'],
 });
-
-// DEBUG: log every raw message from Reverb
-window.Echo.connector.pusher.connection.bind('message', (msg) => {
-    console.log('[Reverb RAW]', msg);
-});
-window.Echo.connector.pusher.connection.bind('connected', () => {
-    console.log('[Reverb] connected');
-});
-window.Echo.connector.pusher.connection.bind('error', (err) => {
-    console.error('[Reverb] connection error', err);
-});

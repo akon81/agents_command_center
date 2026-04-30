@@ -6,6 +6,7 @@ class ProgressParser {
 
     public function __construct() {
         $this->strategies = [
+            new StreamJsonStrategy(),
             new JsonLineStrategy(),
             new RegexStrategy(),
         ];

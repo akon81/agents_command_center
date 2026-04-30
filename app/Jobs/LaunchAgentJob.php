@@ -4,6 +4,7 @@ namespace App\Jobs;
 use App\Events\RunFinished;
 use App\Events\RunStarted;
 use App\Models\Run;
+use App\Services\ClaudeCliCommand;
 use App\Services\Logging\LineBuffer;
 use App\Services\Logging\LogIngester;
 use App\Services\ProcessLauncher;
@@ -21,13 +22,16 @@ class LaunchAgentJob implements ShouldQueue {
         public readonly string $workspacePath,
     ) {}
 
-    public function handle(ProcessLauncher $launcher): void {
-        $run = Run::with('agent')->findOrFail($this->runId);
+    public function handle(ProcessLauncher $launcher, ClaudeCliCommand $cliBuilder): void {
+        $run = Run::with('agent', 'task')->findOrFail($this->runId);
 
-        // PHASE 2: fake command — will be replaced with real claude CLI in Phase 4
-        $command = ['ping', '-n', '12', '127.0.0.1'];
+        $command = $cliBuilder->build(
+            $run->agent->slug,
+            $this->workspacePath,
+        );
 
-        $process = $launcher->build($command, $this->workspacePath);
+        $process = $launcher->build($command, $cliBuilder->workingDirectory());
+        $process->setInput($run->task->prompt);
         $process->start();
 
         $run->update([
@@ -37,15 +41,11 @@ class LaunchAgentJob implements ShouldQueue {
         ]);
         $run->task->update(['status' => 'running', 'started_at' => now()]);
 
-        broadcast(new RunStarted($run->fresh(['agent', 'task'])));
+        try { broadcast(new RunStarted($run->fresh(['agent', 'task']))); } catch (\Throwable) {}
 
         $ingester  = new LogIngester($run);
         $stdoutBuf = new LineBuffer();
         $stderrBuf = new LineBuffer();
-
-        // Emit fake JSON progress events every ~4 pings to simulate agent steps
-        $pingCount = 0;
-        $totalSteps = 6;
 
         while ($process->isRunning()) {
             $out = $process->getIncrementalOutput();
@@ -54,16 +54,7 @@ class LaunchAgentJob implements ShouldQueue {
             if ($out !== '') {
                 $lines = $stdoutBuf->push($out);
                 if (!empty($lines)) {
-                    // Simulate progress JSON every 2 lines
-                    $pingCount += count($lines);
-                    $step = min((int)ceil($pingCount / 2), $totalSteps);
-                    $fakeProgress = json_encode([
-                        'type'  => 'progress',
-                        'step'  => $step,
-                        'total' => $totalSteps,
-                        'label' => "Step {$step} of {$totalSteps}",
-                    ]);
-                    $ingester->ingest('stdout', array_merge($lines, [$fakeProgress]));
+                    $ingester->ingest('stdout', $lines);
                 }
             }
 
@@ -96,7 +87,7 @@ class LaunchAgentJob implements ShouldQueue {
         ]);
         $run->task->update(['status' => $finalStatus, 'finished_at' => now()]);
 
-        broadcast(new RunFinished($run->fresh('agent')));
+        try { broadcast(new RunFinished($run->fresh('agent'))); } catch (\Throwable) {}
     }
 
     public function failed(\Throwable $e): void {
