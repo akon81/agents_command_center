@@ -10,7 +10,10 @@
       "Bash(php -l app/Livewire/DialogPanel.php)",
       "Bash(php -l app/Jobs/LaunchAgentJob.php)",
       "Bash(php -l app/Livewire/AgentCard.php)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(php -l app/Providers/NativeAppServiceProvider.php)",
+      "Bash(xargs grep *)",
+      "Bash(php -r \"echo filesize\\('C:/Users/euro/AppData/Roaming/agent-command-center-dev/database/database.sqlite'\\) . ' bytes' . PHP_EOL;\")"
     ]
   }
 }

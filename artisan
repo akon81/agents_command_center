@@ -6,6 +6,9 @@ use Symfony\Component\Console\Input\ArgvInput;
 
 define('LARAVEL_START', microtime(true));
 
+// Suppress vendor deprecation warnings before autoloader runs
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+
 // Register the Composer autoloader...
 require __DIR__.'/vendor/autoload.php';
 

@@ -118,6 +118,15 @@ class LaunchAgentJob implements ShouldQueue {
             }
         }
 
+        try {
+            $icon   = $finalStatus === 'completed' ? '✓' : '✗';
+            $label  = $run->fresh('agent')->agent->slug;
+            $detail = str($run->task->prompt)->limit(60)->toString();
+            \Native\Laravel\Facades\Notification::title("{$icon} {$label}")
+                ->message($detail)
+                ->show();
+        } catch (\Throwable) {}
+
         try { broadcast(new RunFinished($run->fresh('agent'))); } catch (\Throwable) {}
     }
 

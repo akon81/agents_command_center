@@ -3,7 +3,9 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "native:dev": "php artisan native:serve",
+        "native:build": "npm run build && php artisan native:build --production"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",

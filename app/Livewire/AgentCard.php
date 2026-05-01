@@ -38,7 +38,7 @@ class AgentCard extends Component
     }
 
     #[On('agent-run-started.{agent.id}')]
-    public function onRunStarted(array $data): void
+    public function onRunStarted(): void
     {
         $this->status = 'busy';
         $this->currentAction = null;
@@ -46,24 +46,26 @@ class AgentCard extends Component
     }
 
     #[On('agent-run-finished.{agent.id}')]
-    public function onRunFinished(array $data): void
+    public function onRunFinished(?string $status = null): void
     {
-        $this->status = $data['status'] === 'completed' ? 'completed' : 'failed';
-        $this->progress = $data['status'] === 'completed' ? 100 : $this->progress;
+        $this->status = $status === 'completed' ? 'completed' : 'failed';
+        $this->progress = $status === 'completed' ? 100 : $this->progress;
         $this->currentAction = null;
         $this->lastActivity = now()->diffForHumans();
     }
 
     #[On('agent-progressed.{agent.id}')]
-    public function onProgressed(array $data): void
+    public function onProgressed(?int $progress = null): void
     {
-        $this->progress = $data['progress'];
+        if ($progress !== null) {
+            $this->progress = $progress;
+        }
     }
 
     #[On('agent-action-changed.{agent.id}')]
-    public function onActionChanged(array $data): void
+    public function onActionChanged(?string $current_action = null): void
     {
-        $this->currentAction = $data['current_action'];
+        $this->currentAction = $current_action;
     }
 
     public function openDialog(): void
