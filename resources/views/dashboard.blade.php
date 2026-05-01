@@ -2,4 +2,5 @@
 
 @section('content')
     <livewire:agent-grid />
+    <livewire:dialog-panel />
 @endsection

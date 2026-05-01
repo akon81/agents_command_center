@@ -21,19 +21,17 @@ window.initAgentCard = function (agentId, agentSlug) {
 
     channel
         .listen('.RunStarted', (e) => {
-            console.log('[AgentCard:' + agentSlug + '] RunStarted', e);
-            window.Livewire.dispatch('agent-run-started.' + agentId, { data: e });
+            window.Livewire.dispatch('agent-run-started.' + agentId, e);
         })
         .listen('.RunFinished', (e) => {
-            console.log('[AgentCard:' + agentSlug + '] RunFinished', e);
-            window.Livewire.dispatch('agent-run-finished.' + agentId, { data: e });
+            window.Livewire.dispatch('agent-run-finished.' + agentId, e);
+            window.Livewire.dispatch('panel-run-finished', { agentId: agentId, ...e });
         })
         .listen('.TaskProgressed', (e) => {
-            console.log('[AgentCard:' + agentSlug + '] TaskProgressed', e);
-            window.Livewire.dispatch('agent-progressed.' + agentId, { data: e });
+            window.Livewire.dispatch('agent-progressed.' + agentId, e);
         })
         .listen('.ActionChanged', (e) => {
-            console.log('[AgentCard:' + agentSlug + '] ActionChanged', e);
-            window.Livewire.dispatch('agent-action-changed.' + agentId, { data: e });
+            window.Livewire.dispatch('agent-action-changed.' + agentId, e);
+            window.Livewire.dispatch('panel-action-changed', { agentId: agentId, ...e });
         });
 };

@@ -26,6 +26,8 @@
 }
 
 @layer base {
+    [x-cloak] { display: none !important; }
+
     * {
         border-color: #1f1f23;
     }

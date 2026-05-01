@@ -21,6 +21,7 @@
 <div
     x-data
     x-init="initAgentCard({{ $agent->id }}, '{{ $agent->slug }}')"
+    wire:click="openDialog"
     class="group relative flex flex-col gap-3 rounded-xl p-4 cursor-pointer transition-colors duration-150"
     style="background-color: #141416; border: 1px solid #1f1f23;"
     onmouseover="this.style.backgroundColor='#1a1a1f'"

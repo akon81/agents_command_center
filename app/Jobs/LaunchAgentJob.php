@@ -3,6 +3,8 @@ namespace App\Jobs;
 
 use App\Events\RunFinished;
 use App\Events\RunStarted;
+use App\Models\Dialog;
+use App\Models\Log;
 use App\Models\Run;
 use App\Services\ClaudeCliCommand;
 use App\Services\Logging\LineBuffer;
@@ -40,6 +42,14 @@ class LaunchAgentJob implements ShouldQueue {
             'started_at' => now(),
         ]);
         $run->task->update(['status' => 'running', 'started_at' => now()]);
+
+        Dialog::create([
+            'agent_id'   => $run->agent_id,
+            'run_id'     => $run->id,
+            'role'       => 'user',
+            'content'    => $run->task->prompt,
+            'created_at' => now(),
+        ]);
 
         try { broadcast(new RunStarted($run->fresh(['agent', 'task']))); } catch (\Throwable) {}
 
@@ -86,6 +96,27 @@ class LaunchAgentJob implements ShouldQueue {
             'pid'         => null,
         ]);
         $run->task->update(['status' => $finalStatus, 'finished_at' => now()]);
+
+        $resultLog = Log::where('run_id', $run->id)
+            ->where('stream', 'stdout')
+            ->orderByDesc('seq')
+            ->take(10)
+            ->get()
+            ->first(fn($l) => str_contains($l->content, '"type":"result"'));
+
+        if ($resultLog !== null) {
+            $data = json_decode($resultLog->content, true);
+            if (!empty($data['result'])) {
+                Dialog::create([
+                    'agent_id'   => $run->agent_id,
+                    'run_id'     => $run->id,
+                    'role'       => 'assistant',
+                    'content'    => $data['result'],
+                    'tokens'     => $data['usage']['output_tokens'] ?? null,
+                    'created_at' => now(),
+                ]);
+            }
+        }
 
         try { broadcast(new RunFinished($run->fresh('agent'))); } catch (\Throwable) {}
     }

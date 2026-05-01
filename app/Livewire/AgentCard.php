@@ -66,6 +66,11 @@ class AgentCard extends Component
         $this->currentAction = $data['current_action'];
     }
 
+    public function openDialog(): void
+    {
+        $this->dispatch('open-dialog', agentId: $this->agent->id);
+    }
+
     public function render()
     {
         return view('livewire.agent-card');

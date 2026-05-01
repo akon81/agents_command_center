@@ -6,7 +6,11 @@
       "Bash(claude -p --agent coder --output-format stream-json --verbose --include-partial-messages --dangerously-skip-permissions --add-dir \"C:\\\\Herd\" \"Say hello in one short sentence and stop.\")",
       "Bash(claude -p --output-format stream-json --verbose --include-partial-messages --dangerously-skip-permissions \"Say hello in one short sentence.\")",
       "Bash(claude -p --agent coder --output-format stream-json --verbose --include-partial-messages --dangerously-skip-permissions --add-dir \"C:/Herd\" \"Say hello in one short sentence and stop.\")",
-      "Bash(php artisan *)"
+      "Bash(php artisan *)",
+      "Bash(php -l app/Livewire/DialogPanel.php)",
+      "Bash(php -l app/Jobs/LaunchAgentJob.php)",
+      "Bash(php -l app/Livewire/AgentCard.php)",
+      "Bash(npm run *)"
     ]
   }
 }
