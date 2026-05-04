@@ -186,7 +186,19 @@
             </div>
 
             {{-- Footer --}}
-            <div class="flex items-center justify-end gap-3 px-6 py-4 flex-shrink-0" style="border-top: 1px solid #1f1f23;">
+            <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-top: 1px solid #1f1f23;">
+                {{-- Left: Edit Instructions link --}}
+                <button
+                    type="button"
+                    x-on:click="$wire.close(); $nextTick(() => window.Livewire.dispatch('open-claude-md', { agentId: {{ $agent?->id ?? 0 }} }))"
+                    class="text-xs transition-colors flex items-center gap-1.5"
+                    style="color: #52525b;"
+                    onmouseover="this.style.color='#a1a1aa'"
+                    onmouseout="this.style.color='#52525b'"
+                >
+                    <span>📄</span> Edit Instructions
+                </button>
+                <div class="flex items-center gap-2">
                 <button
                     wire:click="close"
                     type="button"
@@ -203,6 +215,7 @@
                     wire:loading.attr="disabled"
                     wire:loading.class="opacity-50"
                 >Save</button>
+                </div>
             </div>
             @endif
         </div>

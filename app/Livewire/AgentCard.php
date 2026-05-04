@@ -91,6 +91,11 @@ class AgentCard extends Component
         $this->dispatch('open-edit', agentId: $this->agent->id);
     }
 
+    public function openInstructions(): void
+    {
+        $this->dispatch('open-claude-md', agentId: $this->agent->id);
+    }
+
     #[On('agent-updated.{agent.id}')]
     public function onAgentUpdated(): void
     {

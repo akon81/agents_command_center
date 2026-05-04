@@ -20,7 +20,8 @@
       "Bash(php -l app/Livewire/LogStreamPanel.php)",
       "Bash(php -l app/Livewire/DashboardStats.php)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(php -l app/Livewire/ClaudeMdEditor.php)"
     ]
   }
 }

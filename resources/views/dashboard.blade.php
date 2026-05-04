@@ -7,4 +7,5 @@
     <livewire:run-history-panel />
     <livewire:agent-edit-modal />
     <livewire:log-stream-panel />
+    <livewire:claude-md-editor />
 @endsection
