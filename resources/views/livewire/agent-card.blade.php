@@ -112,6 +112,14 @@
         </span>
         <div class="flex items-center gap-2">
             <button
+                wire:click.stop="openEdit"
+                class="text-[10px] leading-none transition-colors"
+                style="color: #3f3f46;"
+                onmouseover="this.style.color='#71717a'"
+                onmouseout="this.style.color='#3f3f46'"
+                title="Edit agent"
+            >✎</button>
+            <button
                 wire:click.stop="openHistory"
                 class="text-[10px] leading-none transition-colors"
                 style="color: #3f3f46;"

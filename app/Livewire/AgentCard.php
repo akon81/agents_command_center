@@ -86,6 +86,17 @@ class AgentCard extends Component
         $this->dispatch('open-history', agentId: $this->agent->id);
     }
 
+    public function openEdit(): void
+    {
+        $this->dispatch('open-edit', agentId: $this->agent->id);
+    }
+
+    #[On('agent-updated.{agent.id}')]
+    public function onAgentUpdated(): void
+    {
+        $this->agent = Agent::findOrFail($this->agent->id);
+    }
+
     public function killRun(): void
     {
         $run = $this->activeRunId
