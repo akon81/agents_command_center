@@ -81,6 +81,11 @@ class AgentCard extends Component
         $this->dispatch('open-dialog', agentId: $this->agent->id);
     }
 
+    public function openHistory(): void
+    {
+        $this->dispatch('open-history', agentId: $this->agent->id);
+    }
+
     public function killRun(): void
     {
         $run = $this->activeRunId

@@ -110,18 +110,20 @@
         <span class="text-[10px]" style="color: #52525b;">
             {{ $style['label'] }} · {{ $lastActivity ?? 'never run' }}
         </span>
-        @if ($agent->is_active)
-            <span
-                class="inline-block w-1.5 h-1.5 rounded-full"
-                style="background-color: #10b981;"
-                title="active"
-            ></span>
-        @else
-            <span
-                class="inline-block w-1.5 h-1.5 rounded-full"
-                style="background-color: #52525b;"
-                title="inactive"
-            ></span>
-        @endif
+        <div class="flex items-center gap-2">
+            <button
+                wire:click.stop="openHistory"
+                class="text-[10px] leading-none transition-colors"
+                style="color: #3f3f46;"
+                onmouseover="this.style.color='#71717a'"
+                onmouseout="this.style.color='#3f3f46'"
+                title="Run history"
+            >history</button>
+            @if ($agent->is_active)
+                <span class="inline-block w-1.5 h-1.5 rounded-full" style="background-color: #10b981;" title="active"></span>
+            @else
+                <span class="inline-block w-1.5 h-1.5 rounded-full" style="background-color: #52525b;" title="inactive"></span>
+            @endif
+        </div>
     </div>
 </div>

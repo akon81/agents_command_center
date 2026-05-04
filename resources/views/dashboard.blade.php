@@ -3,4 +3,5 @@
 @section('content')
     <livewire:agent-grid />
     <livewire:dialog-panel />
+    <livewire:run-history-panel />
 @endsection
