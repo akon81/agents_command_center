@@ -1,7 +1,3 @@
-@php
-    $activeCount = \App\Models\Agent::where('is_active', true)->count();
-@endphp
-
 <header
     class="fixed top-0 left-0 right-0 z-50 h-12 flex items-center justify-between px-5 border-b"
     style="background-color: rgba(10,10,11,0.85); backdrop-filter: blur(12px); border-color: #1f1f23;"
@@ -38,11 +34,8 @@
             }
         }"
     >
-        {{-- Active agent count --}}
-        <div class="flex items-center gap-1.5">
-            <span class="inline-block w-1.5 h-1.5 rounded-full" style="background-color: #10b981;"></span>
-            <span class="text-xs font-medium" style="color: #e8e8ea;">{{ $activeCount }} agents</span>
-        </div>
+        {{-- Live running counter --}}
+        <livewire:running-counter />
 
         {{-- Separator --}}
         <div class="w-px h-3.5" style="background-color: #1f1f23;"></div>

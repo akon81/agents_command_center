@@ -126,6 +126,8 @@ class NativeAppServiceProvider implements ProvidesPhpIni
         }
     }
 
+    private const QUEUE_CONCURRENCY = 4;
+
     private function startQueueWorker(): void
     {
         $log     = storage_path('logs/reverb-native.log');
@@ -136,14 +138,16 @@ class NativeAppServiceProvider implements ProvidesPhpIni
             return;
         }
 
-        if (PHP_OS_FAMILY === 'Windows') {
-            $cmd = "start \"\" /B \"{$php}\" \"{$artisan}\" queue:work --sleep=3 --tries=1 --timeout=0 > NUL 2>&1";
-            pclose(popen($cmd, 'r'));
-        } else {
-            shell_exec("\"{$php}\" \"{$artisan}\" queue:work --sleep=3 --tries=1 --timeout=0 > /dev/null 2>&1 &");
+        for ($i = 1; $i <= self::QUEUE_CONCURRENCY; $i++) {
+            if (PHP_OS_FAMILY === 'Windows') {
+                $cmd = "start \"\" /B \"{$php}\" \"{$artisan}\" queue:work --sleep=3 --tries=1 --timeout=0 > NUL 2>&1";
+                pclose(popen($cmd, 'r'));
+            } else {
+                shell_exec("\"{$php}\" \"{$artisan}\" queue:work --sleep=3 --tries=1 --timeout=0 > /dev/null 2>&1 &");
+            }
         }
 
-        $this->reverbLog($log, 'Queue worker started');
+        $this->reverbLog($log, self::QUEUE_CONCURRENCY . ' queue workers started');
     }
 
     private function ensureDatabaseReady(): void

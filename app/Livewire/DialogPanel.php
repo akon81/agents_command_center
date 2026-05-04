@@ -25,9 +25,18 @@ class DialogPanel extends Component
     public function openFor(int $agentId): void
     {
         if ($this->agentId !== $agentId) {
-            $this->agentId = $agentId;
-            $this->prompt = '';
+            $this->agentId      = $agentId;
+            $this->prompt       = '';
+            $this->currentAction = null;
             $this->resetErrorBag();
+
+            $activeRun          = \App\Models\Run::where('agent_id', $agentId)
+                ->whereIn('status', ['running', 'pending'])
+                ->latest()
+                ->first();
+            $this->isRunning    = $activeRun !== null;
+            $this->activeRunId  = $activeRun?->id;
+            $this->currentAction = $activeRun?->current_action;
         }
         $this->open = true;
     }

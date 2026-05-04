@@ -13,7 +13,10 @@
       "Bash(npm run *)",
       "Bash(php -l app/Providers/NativeAppServiceProvider.php)",
       "Bash(xargs grep *)",
-      "Bash(php -r \"echo filesize\\('C:/Users/euro/AppData/Roaming/agent-command-center-dev/database/database.sqlite'\\) . ' bytes' . PHP_EOL;\")"
+      "Bash(php -r \"echo filesize\\('C:/Users/euro/AppData/Roaming/agent-command-center-dev/database/database.sqlite'\\) . ' bytes' . PHP_EOL;\")",
+      "Bash(git add *)",
+      "Bash(php -l app/Livewire/RunHistoryPanel.php)",
+      "Bash(php -l app/Livewire/AgentEditModal.php)"
     ]
   }
 }
