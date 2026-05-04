@@ -46,14 +46,26 @@
             </span>
         </div>
 
-        {{-- Status pill --}}
-        <span class="status-pill {{ $style['pill'] }} flex-shrink-0 {{ $status === 'busy' ? 'animate-pulse' : '' }}">
-            <span
-                class="inline-block w-1.5 h-1.5 rounded-full"
-                style="background-color: {{ $style['dot'] }};"
-            ></span>
-            {{ $style['label'] }}
-        </span>
+        {{-- Status pill + kill button --}}
+        <div class="flex items-center gap-1.5 flex-shrink-0">
+            @if ($status === 'busy')
+                <button
+                    wire:click.stop="killRun"
+                    class="text-[10px] px-1.5 py-0.5 rounded leading-none transition-colors"
+                    style="background-color: #3f1010; color: #ef4444; border: 1px solid #7f1d1d;"
+                    onmouseover="this.style.backgroundColor='#7f1d1d'"
+                    onmouseout="this.style.backgroundColor='#3f1010'"
+                    title="Stop agent"
+                >■</button>
+            @endif
+            <span class="status-pill {{ $style['pill'] }} {{ $status === 'busy' ? 'animate-pulse' : '' }}">
+                <span
+                    class="inline-block w-1.5 h-1.5 rounded-full"
+                    style="background-color: {{ $style['dot'] }};"
+                ></span>
+                {{ $style['label'] }}
+            </span>
+        </div>
     </div>
 
     {{-- Layer + Model --}}

@@ -12,6 +12,8 @@ class NativeAppServiceProvider implements ProvidesPhpIni
     public function boot(): void
     {
         $this->ensureDatabaseReady();
+        $this->cleanupOrphanedRuns();
+        $this->startQueueWorker();
         $this->startReverb();
 
         Window::open()
@@ -100,6 +102,48 @@ class NativeAppServiceProvider implements ProvidesPhpIni
     private function reverbLog(string $path, string $msg): void
     {
         file_put_contents($path, date('[Y-m-d H:i:s] ') . $msg . PHP_EOL, FILE_APPEND);
+    }
+
+    private function cleanupOrphanedRuns(): void
+    {
+        $log = storage_path('logs/reverb-native.log');
+
+        try {
+            $orphaned = \App\Models\Run::whereIn('status', ['running', 'pending'])->with('task')->get();
+
+            if ($orphaned->isEmpty()) {
+                return;
+            }
+
+            foreach ($orphaned as $run) {
+                $run->update(['status' => 'failed', 'finished_at' => now(), 'pid' => null]);
+                $run->task?->update(['status' => 'failed', 'finished_at' => now()]);
+            }
+
+            $this->reverbLog($log, "Cleaned {$orphaned->count()} orphaned run(s)");
+        } catch (\Throwable $e) {
+            $this->reverbLog($log, 'Orphan cleanup error: ' . $e->getMessage());
+        }
+    }
+
+    private function startQueueWorker(): void
+    {
+        $log     = storage_path('logs/reverb-native.log');
+        $php     = PHP_BINARY;
+        $artisan = base_path('artisan');
+
+        if (!file_exists($artisan)) {
+            return;
+        }
+
+        if (PHP_OS_FAMILY === 'Windows') {
+            $cmd = "start \"\" /B \"{$php}\" \"{$artisan}\" queue:work --sleep=3 --tries=1 --timeout=0 > NUL 2>&1";
+            pclose(popen($cmd, 'r'));
+        } else {
+            shell_exec("\"{$php}\" \"{$artisan}\" queue:work --sleep=3 --tries=1 --timeout=0 > /dev/null 2>&1 &");
+        }
+
+        $this->reverbLog($log, 'Queue worker started');
     }
 
     private function ensureDatabaseReady(): void
