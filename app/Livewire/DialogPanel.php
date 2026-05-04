@@ -46,6 +46,13 @@ class DialogPanel extends Component
         $this->open = false;
     }
 
+    public function openLogs(): void
+    {
+        if (!$this->activeRunId) return;
+        $agent = Agent::find($this->agentId);
+        $this->dispatch('open-logs', runId: $this->activeRunId, agentSlug: $agent?->slug ?? '');
+    }
+
     public function submit(): void
     {
         $this->validate();

@@ -84,7 +84,7 @@
 
             {{-- Running indicator --}}
             @if ($isRunning)
-            <div class="flex justify-start">
+            <div class="flex justify-start items-end gap-2">
                 <div class="px-4 py-2.5 rounded-2xl rounded-tl-sm text-xs"
                      style="background-color: #141416; color: #71717a; border: 1px solid #1f1f23;">
                     @if ($currentAction)
@@ -96,6 +96,14 @@
                         </span>
                     @endif
                 </div>
+                <button
+                    wire:click="openLogs"
+                    class="text-[10px] px-2 py-1 rounded-md mb-0.5 transition-colors flex-shrink-0"
+                    style="background-color: #0a0a0b; color: #52525b; border: 1px solid #1a1a1e;"
+                    onmouseover="this.style.color='#a1a1aa';this.style.borderColor='#2a2a3a'"
+                    onmouseout="this.style.color='#52525b';this.style.borderColor='#1a1a1e'"
+                    title="Open live log stream"
+                >logs ↗</button>
             </div>
             @endif
         </div>
