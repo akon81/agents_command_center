@@ -50,10 +50,25 @@ class RunHistoryPanel extends Component
             ? Dialog::where('run_id', $this->expandedRunId)->orderBy('created_at')->get()
             : collect();
 
+        $agentStats = null;
+        if ($agent) {
+            $finished  = $runs->whereIn('status', ['completed', 'failed']);
+            $completed = $runs->where('status', 'completed');
+            $agentStats = [
+                'total'        => $runs->count(),
+                'success_rate' => $finished->count() > 0
+                    ? round($completed->count() / $finished->count() * 100)
+                    : null,
+                'avg_ms'       => (int) $runs->whereNotNull('duration_ms')->avg('duration_ms'),
+                'tokens'       => Dialog::where('agent_id', $this->agentId)->where('role', 'assistant')->sum('tokens'),
+            ];
+        }
+
         return view('livewire.run-history-panel', [
             'agent'           => $agent,
             'runs'            => $runs,
             'expandedDialogs' => $expandedDialogs,
+            'agentStats'      => $agentStats,
         ]);
     }
 }

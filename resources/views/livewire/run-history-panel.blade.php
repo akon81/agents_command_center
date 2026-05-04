@@ -51,6 +51,39 @@
             </button>
         </div>
 
+        {{-- Per-agent stats strip --}}
+        @if ($agentStats)
+        <div class="flex items-center gap-5 px-5 py-2.5 flex-shrink-0" style="border-bottom: 1px solid #141416; background-color: #0a0a0b;">
+            <div class="flex items-baseline gap-1">
+                <span class="text-sm font-bold tabular-nums" style="color: #e8e8ea;">{{ $agentStats['total'] }}</span>
+                <span class="text-[10px] uppercase tracking-wider" style="color: #52525b;">runs</span>
+            </div>
+            @if ($agentStats['success_rate'] !== null)
+            <div class="flex items-baseline gap-1">
+                <span class="text-sm font-bold tabular-nums"
+                      style="color: {{ $agentStats['success_rate'] >= 90 ? '#10b981' : ($agentStats['success_rate'] >= 70 ? '#f59e0b' : '#ef4444') }};">
+                    {{ $agentStats['success_rate'] }}%
+                </span>
+                <span class="text-[10px] uppercase tracking-wider" style="color: #52525b;">success</span>
+            </div>
+            @endif
+            @if ($agentStats['avg_ms'] > 0)
+            <div class="flex items-baseline gap-1">
+                @php $s = $agentStats['avg_ms']; $fmt = $s < 60000 ? round($s/1000,1).'s' : floor($s/60000).'m '.round(($s%60000)/1000).'s'; @endphp
+                <span class="text-sm font-bold tabular-nums" style="color: #e8e8ea;">{{ $fmt }}</span>
+                <span class="text-[10px] uppercase tracking-wider" style="color: #52525b;">avg</span>
+            </div>
+            @endif
+            @if ($agentStats['tokens'] > 0)
+            <div class="flex items-baseline gap-1">
+                @php $t = $agentStats['tokens']; $ft = $t >= 1000 ? round($t/1000,1).'k' : $t; @endphp
+                <span class="text-sm font-bold tabular-nums" style="color: #e8e8ea;">{{ $ft }}</span>
+                <span class="text-[10px] uppercase tracking-wider" style="color: #52525b;">tokens</span>
+            </div>
+            @endif
+        </div>
+        @endif
+
         {{-- Run list --}}
         <div class="flex-1 overflow-y-auto">
             @forelse ($runs as $run)

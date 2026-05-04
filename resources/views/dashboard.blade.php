@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+    <livewire:dashboard-stats />
     <livewire:agent-grid />
     <livewire:dialog-panel />
     <livewire:run-history-panel />
